@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+python-multipart
+numpy
+soundfile
+openvino
+openvino-genai
+optimum[openvino]
+httpx
+reportlab
+edge-tts
+langdetect
+pywebview
+pyinstaller
+sounddevice

@@ -1,0 +1,71 @@
+.qa-card {
+  background: white;
+  border-left: 4px solid #667eea;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 16px 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.qa-question {
+  font-size: 13px; font-weight: 600; color: #667eea;
+  margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.3px;
+}
+.qa-answer { font-size: 15px; color: #2d3748; line-height: 1.6; }
+
+.service-selection { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; width: 100%; }
+
+.service-option {
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px 20px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+.service-option:hover {
+  border-color: #667eea; background: #f7fafc;
+  transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.service-title       { font-size: 16px; font-weight: 600; color: #1a202c; margin-bottom: 6px; }
+.service-description { font-size: 14px; color: #718096; line-height: 1.5; }
+
+.summary-card {
+  background: #f7fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 20px 0;
+}
+.summary-card h3 {
+  font-size: 18px; font-weight: 600; color: #1a202c;
+  margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #e2e8f0;
+}
+
+.summary-item {
+  padding: 12px 0;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 14px; color: #2d3748; line-height: 1.6;
+}
+.summary-item:last-child { border-bottom: none; }
+.summary-item strong { display: block; color: #667eea; margin-bottom: 4px; font-size: 13px; text-transform: capitalize; }
+
+.summary-actions { display: flex; gap: 12px; margin: 20px 0; }
+.summary-actions .button { flex: 1; margin-bottom: 0; }
+
+@media (max-width: 480px) {
+  .service-option  { padding: 14px 16px; }
+  .service-title   { font-size: 15px; }
+  .service-description { font-size: 13px; }
+  .summary-card    { padding: 20px; }
+  .summary-actions { flex-direction: column; }
+}

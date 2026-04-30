@@ -1,0 +1,587 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>GP Appointment Assistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+
+  <link rel="stylesheet" href="./css/screens/voice-detection.css">
+  <link rel="stylesheet" href="./css/screens/emergency.css">
+  <link rel="stylesheet" href="./css/screens/chat.css">
+
+  <link rel="stylesheet" href="./css/components/dropdown.css">
+  <link rel="stylesheet" href="./css/components/messages.css">
+  <link rel="stylesheet" href="./css/components/questionnaire.css">
+</head>
+
+<body>
+  <!-- ════════════════════════════════════════
+       TOP BANNER
+       ════════════════════════════════════════ -->
+  <div class="banner">
+    <div class="banner-content">
+      <div class="banner-logo">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19 3h-1V1h-2v2H8V1H6v2H5C3.9 3 3 3.9 3 5v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zm-7-9h-2v2H8v2h2v2h2v-2h2v-2h-2v-2z"/>
+        </svg>
+      </div>
+      <div class="banner-title" id="bannerTitle">GP Appointment Assistant</div>
+      <button class="banner-back" id="bannerBack">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+        </svg>
+        <span id="bannerBackText"></span>
+      </button>
+      <button class="banner-back" id="bannerBackEmergency">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+        </svg>
+        <span id="bannerBackEmergencyText"></span>
+      </button>
+      <a class="banner-help-btn" href="https://www.motioninputgames.com/appointment-confirmation-app.html" target="_blank" rel="noopener" id="bannerHelpBtn">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
+      </svg>
+      <span id="bannerHelpBtnText">Help</span>
+    </a>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- ════════════════════════════════════════
+         Voice Language Detection
+         ════════════════════════════════════════ -->
+    <div class="screen active" id="voiceDetectionScreen">
+      <div class="card">
+        <h1 class="title">Select Your Language</h1>
+        <p class="subtitle">Press the microphone and say a sentence in your language</p>
+
+        <div class="mic-container">
+          <button class="mic-button" id="voiceDetectBtn">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+              <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+            </svg>
+          </button>
+          <p class="mic-instruction" id="micInstruction">Tap to speak</p>
+        </div>
+
+        <div class="loading" id="voiceLoadingIndicator">
+          <div class="spinner"></div>
+          <div class="loading-text">Detecting language...</div>
+        </div>
+
+        <div class="divider">OR</div>
+
+        <button class="button button-manual" id="btnChooseManually">
+          <span class="btn-globe">🌐</span>
+          <span>Select language manually</span>
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 10l5 5 5-5z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         Language Confirmation
+         ════════════════════════════════════════ -->
+    <div class="screen" id="confirmationScreen">
+      <div class="card">
+        <h1 class="title">Confirm Language</h1>
+        <p class="subtitle">Is this the correct language?</p>
+
+        <div class="detected-box">
+          <div class="detected-label">Detected</div>
+          <span class="detected-flag" id="detectedLanguageFlag">🇬🇧</span>
+          <div class="detected-language" id="detectedLanguageName">English</div>
+          <div class="detected-native" id="detectedLanguageNative">(English)</div>
+        </div>
+
+        <div class="loading" id="translationLoadingIndicator">
+          <div class="spinner"></div>
+          <div class="loading-text">Loading...</div>
+        </div>
+
+        <button class="button button-primary" id="btnConfirmLanguage">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+          </svg>
+          Yes, Continue
+        </button>
+        <button class="button button-secondary" id="btnTryAgain">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+          </svg>
+          Try Again
+        </button>
+        <button class="button button-tertiary" id="btnManualFromConfirm">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+          </svg>
+          Select Manually
+        </button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         Manual Language Selection
+         ════════════════════════════════════════ -->
+    <div class="screen" id="manualLanguageScreen">
+      <div class="card">
+        <h1 class="title">Choose Your Language</h1>
+        <p class="subtitle">Select from the list below</p>
+        <div class="dropdown">
+          <div class="dropdown-selected" id="dropdownSelected">
+            <div class="dropdown-flag" id="selectedFlag">🇬🇧</div>
+            <span class="lang-name" id="selectedName">English</span>
+            <span class="arrow">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 10l5 5 5-5z"/>
+              </svg>
+            </span>
+          </div>
+          <div class="dropdown-menu" id="dropdownMenu">
+            <div class="dropdown-search">
+              <input type="text" id="languageSearch" placeholder="Search..." autocomplete="off"/>
+            </div>
+            <div class="dropdown-options" id="dropdownOptions"></div>
+          </div>
+        </div>
+
+        <div class="loading" id="manualLoadingIndicator">
+          <div class="spinner"></div>
+          <div class="loading-text">Loading...</div>
+        </div>
+
+        <button class="button button-primary" id="btnContinueManual">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+          </svg>
+          Continue
+        </button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         Action Selection
+         ════════════════════════════════════════ -->
+    <div class="screen" id="actionScreen">
+      <div class="card">
+        <h1 class="title" id="actionTitle">How can we help you today?</h1>
+
+        <button class="action-button action-button-primary" id="btnMakeAppointment">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+          </svg>
+          <span id="appointmentText">Make Appointment</span>
+        </button>
+        <button class="action-button action-button-emergency" id="btnEmergency">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+          </svg>
+          <span id="emergencyText">Emergency</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ════════════════════════════════════════
+       Emergency Symptoms
+       ════════════════════════════════════════ -->
+  <div class="screen" id="emergencyScreen">
+    <div class="card emergency-card">
+      <div class="emergency-header">
+        <h1 class="emergency-title" id="emergencyTitle"></h1>
+      </div>
+
+      <div class="emergency-body">
+        <ul class="emergency-list" id="emergencyList">
+        </ul>
+      </div>
+
+      <div class="emergency-confirm">
+        <h2 class="emergency-confirm-title" id="emergencyConfirmTitle"></h2>
+        <div class="emergency-buttons">
+          <button class="button button-emergency" id="btnEmergencyYes">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+            </svg>
+            <span id="emergencyYesText"></span>
+          </button>
+          <button class="button button-gp" id="btnEmergencyNo">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+            </svg>
+            <span id="emergencyNoText"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       Accessibility Preference
+       ════════════════════════════════════════ -->
+  <div class="screen" id="accessibilityScreen">
+  <div class="card">
+    <h1 class="title" id="accessibilityTitle"></h1>
+    <p class="subtitle" id="accessibilitySubtitle"></p>
+
+    <div class="disclaimer-banner">
+      <div class="disclaimer-icon-wrap">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+        </svg>
+      </div>
+      <div class="disclaimer-body">
+        <div class="disclaimer-label" id="disclaimerLabel"></div>
+        <p class="disclaimer-text" id="disclaimerText"></p>
+      </div>
+    </div>
+
+    <button class="action-button action-button-primary" id="btnChooseVoice">
+      <span id="voiceOptionText"></span>
+    </button>
+    <button class="action-button action-button-primary" id="btnChooseText">
+      <span id="textOptionText"></span>
+    </button>
+  </div>
+</div>
+
+  <!-- ════════════════════════════════════════
+       Chat
+       ════════════════════════════════════════ -->
+  <div class="screen" id="chatScreen">
+    <div class="chat-wrapper">
+      <div class="chat-container" id="chatContainer"></div>
+
+      <div class="progress-bar-wrapper" id="progressBarWrapper" style="display:none;">
+        <div class="progress-bar-header">
+          <span class="progress-label" id="progressLabel">Question 1 of 7</span>
+          <span class="progress-fraction" id="progressFraction">0 answered</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="tts-toggle-row">
+          <button id="ttsToggleBtn" class="tts-btn" title="Toggle voiceover">
+            <svg class="tts-icon-on" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+            </svg>
+            <svg class="tts-icon-off" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+            </svg>
+          </button>
+          <span class="tts-label" id="ttsLabel"></span>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <span class="status-badge" id="statusBadge">
+            <span class="status-dot"></span>
+            <span id="statusText"></span>
+          </span>
+        </div>
+
+        <div class="input-mode-toggle">
+          <button class="mode-button active" id="voiceModeBtn">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+              <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+            </svg>
+            <span id="voiceModeBtnText"></span>
+          </button>
+          <button class="mode-button" id="textModeBtn">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+            </svg>
+            <span id="textModeBtnText"></span>
+          </button>
+        </div>
+
+        <div class="control-buttons">
+          <button class="control-button control-button-primary" id="startBtn">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+              <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+            </svg>
+            <span id="startBtnText"></span>
+          </button>
+          <button class="control-button control-button-primary recording" id="stopBtn" disabled>
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 6h12v12H6z"/>
+            </svg>
+            <span id="stopBtnText"></span>
+          </button>
+          <button class="control-button control-button-secondary" id="clearBtn">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+            </svg>
+            <span id="clearBtnText"></span>
+          </button>
+        </div>
+
+        <div class="text-input-container" id="textInputContainer" style="display:none;">
+          <div class="text-input-wrapper">
+            <textarea class="text-input" id="textInput" placeholder="Type your answer here..." rows="1"></textarea>
+          </div>
+          <button class="send-button" id="sendTextBtn">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+            </svg>
+            <span id="sendBtnText"></span>
+          </button>
+        </div>
+
+        <div class="hint">
+          <span id="hintText">Press</span> <kbd class="kbd">Space</kbd> <span id="hintText2">to record</span> <span id="hintText3">or switch to Type mode</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- ════════════════════════════════════════
+     EMERGENCY ACTION SCREEN
+     ════════════════════════════════════════ -->
+<div class="screen" id="emergencyActionScreen">
+  <div class="ae-page">
+    <div class="ae-999-card">
+      <div class="ae-999-text">
+        <div class="ae-999-chip">
+          <span class="ae-999-chip-dot"></span>
+          <span id="urgencyChipLabel"></span>
+        </div>
+        <h2 id="emergencyCallTitle"></h2>
+        <p  id="emergencyCallSubtitle"></p>
+      </div>
+      <div class="ae-999-btn-wrap">
+        <a class="ae-999-btn" href="tel:999" id="emergency999Btn">
+          <span class="ae-999-btn-icon">
+            <svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
+          </span>
+          <span id="emergency999BtnText"></span>
+        </a>
+      </div>
+    </div>
+
+    <div class="ae-lower-grid">
+
+      <div class="ae-section-card">
+        <div class="ae-section-card-hdr">
+          <div class="ae-section-icon blue">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+          </div>
+          <div>
+            <p class="ae-section-card-title" id="emergency111Title"></p>
+            <p class="ae-section-card-desc"  id="ae111Desc"></p>
+          </div>
+        </div>
+        <div class="ae-section-card-body">
+          <a class="ae-111-btn" href="https://111.nhs.uk" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+            <span id="emergency111Btn"></span>
+          </a>
+          <p class="ae-111-note" id="ae111Note"></p>
+        </div>
+      </div>
+
+      <div class="ae-section-card">
+        <div class="ae-section-card-hdr">
+          <div class="ae-section-icon slate">
+            <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          </div>
+          <div>
+            <p class="ae-section-card-title" id="emergencyAETitle"></p>
+            <p class="ae-section-card-desc"  id="aeFinderDesc"></p>
+          </div>
+        </div>
+        <div class="ae-section-card-body">
+
+          <div class="ae-location-row">
+            <button class="ae-location-btn" id="findAEBtn">
+              <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+              <span id="emergencyAEUseLocation"></span>
+            </button>
+            <span class="ae-or-text" id="aeOrText"></span>
+            <div class="ae-postcode-row">
+              <input type="text" id="aePostcodeInput" class="ae-postcode-input" maxlength="10" />
+              <button class="ae-search-btn" id="aePostcodeBtn">
+                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="loading" id="aeLoadingIndicator">
+            <div class="spinner"></div>
+            <div class="loading-text" id="emergencyAELoading"></div>
+          </div>
+
+          <div id="aeMapContainer" style="display:none;">
+            <div id="aeMap"></div>
+            <div id="aeList" class="clinic-list"></div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+  <div class="screen" id="clinicFinderScreen">
+    <div class="clinic-finder-wrapper">
+
+<div class="how-to-card" id="howToCard">
+  <div class="how-to-header">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+    </svg>
+    <span id="howToSendTitle"></span>
+  </div>
+  <div class="how-to-steps">
+    <div class="how-to-step">
+      <div class="how-to-num">1</div>
+      <div class="how-to-text">
+        <strong id="howToStep1Title"></strong>
+        <p id="howToStep1Desc"></p>
+      </div>
+    </div>
+    <div class="how-to-step">
+      <div class="how-to-num">2</div>
+      <div class="how-to-text">
+        <strong id="howToStep2Title"></strong>
+        <p id="howToStep2Desc"></p>
+      </div>
+    </div>
+    <div class="how-to-step">
+      <div class="how-to-num">3</div>
+      <div class="how-to-text">
+        <strong id="howToStep3Title"></strong>
+        <p id="howToStep3Desc"></p>
+      </div>
+    </div>
+    <div class="how-to-step">
+      <div class="how-to-num">4</div>
+      <div class="how-to-text">
+        <strong id="howToStep4Title"></strong>
+        <p id="howToStep4Desc"></p>
+      </div>
+    </div>
+    <div class="how-to-step">
+      <div class="how-to-num">5</div>
+      <div class="how-to-text">
+        <strong id="howToStep5Title"></strong>
+        <p id="howToStep5Desc"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+      <div class="pdf-download-card" id="pdfDownloadCard">
+        <div class="pdf-icon">📄</div>
+        <div class="pdf-card-text">
+          <h3 id="pdfCardTitle"></h3>
+          <p id="pdfCardSubtitle"></p>
+        </div>
+        <button class="button button-primary pdf-download-btn" id="pdfDownloadBtn">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+          </svg>
+          <span id="pdfDownloadBtnText"></span>
+        </button>
+      </div>
+
+      <div class="email-sender-card">
+        <div class="email-sender-icon">✉️</div>
+        <div class="email-sender-body">
+          <h3 id="emailSenderTitle"></h3>
+          <p id="emailSenderSubtitle"></p>
+          <div class="email-input-row">
+            <input type="email" id="clinicEmailInput" class="postcode-input"
+              placeholder="e.g. reception@gpclinic.nhs.uk" autocomplete="email"/>
+            <button class="button button-outline email-send-btn" id="emailSendBtn">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+              </svg>
+              <span id="emailSendBtnText"></span>
+            </button>
+          </div>
+          <p class="email-hint" id="emailHint"></p>
+        </div>
+      </div>
+
+      <div class="clinic-section">
+        <div class="clinic-section-header">
+          <h3 id="clinicFinderTitle"></h3>
+          <p id="clinicFinderSubtitle"></p>
+        </div>
+        <div class="clinic-location-row">
+          <button class="button button-outline find-clinics-btn" id="findClinicsBtn">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            </svg>
+            <span id="findClinicsBtnText"></span>
+          </button>
+          <span class="clinic-or-divider">or</span>
+          <div class="postcode-input-row">
+            <input type="text" id="postcodeInput" class="postcode-input" maxlength="10"/>
+            <button class="button button-outline find-clinics-btn" id="postcodeSearchBtn">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+              </svg>
+              <span id="postcodeSearchBtnText">Search</span>
+            </button>
+          </div>
+        </div>
+        <div id="clinicMapContainer" style="display:none;">
+          <div id="clinicMap" class="clinic-map"></div>
+          <div id="clinicList" class="clinic-list"></div>
+        </div>
+        <div class="loading" id="clinicLoadingIndicator">
+          <div class="spinner"></div>
+          <div class="loading-text" id="clinicLoadingText"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="globalLoadingOverlay" class="global-loading-overlay" style="display:none;">
+    <div class="global-loading-card">
+      <div class="global-spinner"></div>
+      <p class="global-loading-title" id="globalLoadingTitle"></p>
+      <p class="global-loading-sub" id="globalLoadingSub"></p>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="./js/config.js?v=36"></script>
+  <script src="./js/state.js?v=36"></script>
+  <script src="./js/api.js?v=36"></script>
+  <script src="./js/tts.js?v=36"></script>
+  <script src="./js/ui.js?v=36"></script>
+  <script src="./js/recorder.js?v=36"></script>
+  <script src="./js/questionnaire.js?v=36"></script>
+  <script src="./js/recommendations.js?v=36"></script>
+
+  <script src="./js/screens/voice-detection.js?v=36"></script>
+  <script src="./js/screens/confirmation.js?v=36"></script>
+  <script src="./js/screens/manual-language.js?v=36"></script>
+  <script src="./js/screens/emergency.js?v=36"></script>
+  <script src="./js/screens/emergency-action.js?v=36"></script>
+  <script src="./js/screens/accessibility.js?v=36"></script>
+  <script src="./js/screens/chat.js?v=36"></script>
+
+  <script src="./js/clinic-finder.js?v=36"></script>
+  <script src="./js/main.js?v=36"></script>
+</body>
+</html>
