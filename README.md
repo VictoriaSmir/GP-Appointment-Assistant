@@ -12,7 +12,7 @@ The quantised model files are not committed to this repository because they exce
 
 **Option 1 — Pre-built models (recommended).** Download the `models/` folder from the project Google Drive bundle:
 
-> _[Insert Google Drive link here once available]_
+https://drive.google.com/drive/folders/1dg_Y_vKIzoslqFodWABjQ03_R7DGjoH5?usp=sharing 
 
 The folder contains both `whisper_ov_quantised/` and `nllb_ov_quantised/` ready to use. Place the entire folder in the project root (alongside `app_entry.py`) for source builds, or alongside the executable for packaged builds.
 
